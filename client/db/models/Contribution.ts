@@ -1,8 +1,8 @@
-// file: models/Contribution.ts
+//models/Contribution.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
 interface IContribution extends Document {
-  userId: string; // or mongoose.Schema.Types.ObjectId if referencing a User model
+  userId: string; //clerk user id
   banglish_text: string;
   bangla_text: string;
   isApproved: boolean;
