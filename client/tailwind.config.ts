@@ -9,7 +9,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        balooda: ["Baloo Da 2", "serif"],
+        balooda: ["'Baloo Da 2'", "serif"],
+        poppins: ["Poppins", "sans-serif"],
       }
     },
   },
