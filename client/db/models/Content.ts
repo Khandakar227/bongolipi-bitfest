@@ -1,7 +1,7 @@
 import { model, models, Schema } from 'mongoose';
 
 export interface IContent {
-    userId: string,
+    userId: string, //clerk user id
     title: string,
     caption: string,
     content: string,

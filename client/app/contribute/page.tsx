@@ -1,5 +1,6 @@
 "use client";
 
+import AudioRecorder from "@/components/common/AudioRecorder";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -67,6 +68,7 @@ export default function Contribute() {
         </p>
 
         <div className="p-4 rounded shadow bg-gray-50 mt-8">
+            <AudioRecorder />
             <label className="font-semibold" htmlFor="banglish">Banglish Text</label>
             <textarea id="banglish" className="p-4 shadow bg-white rounded border min-h-20 w-full mb-4" placeholder="Ekhane banglish likhun..." value={banglish} onChange={(e) => setBanglish(e.target.value)}></textarea>
 
