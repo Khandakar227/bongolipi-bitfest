@@ -7,15 +7,19 @@ import { useEffect, useState } from "react";
 import { BANGLISH_API } from "@/lib/const";
 import Spinner from "@/components/common/Spinner";
 
-const Tiptap = ({onContentChange}:{onContentChange:(data:string)=>void}) => {
-    const [translationLoading, setTranslationLoading] = useState(false);
+const Tiptap = ({
+  onContentChange,
+}: {
+  onContentChange: (data: string) => void;
+}) => {
+  const [translationLoading, setTranslationLoading] = useState(false);
   const editor = useEditor({
     extensions: [StarterKit, Markdown],
     content: "",
     onUpdate: ({ editor }) => {
-        const htmlContent = editor?.storage?.markdown?.getMarkdown();
-        onContentChange(htmlContent);
-      },
+      const htmlContent = editor?.storage?.markdown?.getMarkdown();
+      onContentChange(htmlContent);
+    },
   });
 
   useEffect(() => {
@@ -40,34 +44,29 @@ const Tiptap = ({onContentChange}:{onContentChange:(data:string)=>void}) => {
     const { from, to } = selection;
     const selectedText = editor.state.doc.textBetween(from, to, " ");
     const translatedText = await fetchTranslation(selectedText);
-    editor
-    .chain()
-    .focus()
-    .insertContentAt({ from, to }, translatedText)
-    .run();
+    editor.chain().focus().insertContentAt({ from, to }, translatedText).run();
   };
 
   const fetchTranslation = async (text: string) => {
     try {
-        // const url = `${BANGLISH_API}/banglish`;
-        // const options = {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ text }),
-        // };
-        setTranslationLoading(true);
-        // const response = await fetch(url, options);
-        // const data = await response.json();
-        // return data.generated_text;
-        return _fetchTranslation(text);
+      // const url = `${BANGLISH_API}/banglish`;
+      // const options = {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ text }),
+      // };
+      setTranslationLoading(true);
+      // const response = await fetch(url, options);
+      // const data = await response.json();
+      // return data.generated_text;
+      return _fetchTranslation(text);
     } catch (error) {
-        console.log(error);
-        alert("Something went wrong. Please try again later.");
+      console.log(error);
+      alert("Something went wrong. Please try again later.");
     } finally {
-        setTranslationLoading(false);
+      setTranslationLoading(false);
     }
-    
-  }
+  };
   return (
     <div className="w-full">
       {/* Toolbar */}
@@ -114,11 +113,19 @@ const Tiptap = ({onContentChange}:{onContentChange:(data:string)=>void}) => {
           <button
             onClick={() => editor.chain().focus().undo().run()}
             style={{ marginRight: "5px" }}
-          >↩</button>
+          >
+            ↩
+          </button>
           <button onClick={() => editor.chain().focus().redo().run()}>↪</button>
 
           <div className="px-4">
-            <button disabled={translationLoading} className="bg-primary text-white" onClick={translate}>{translationLoading ? <Spinner/> : "Translate"}</button>
+            <button
+              disabled={translationLoading}
+              className="bg-primary text-white"
+              onClick={translate}
+            >
+              {translationLoading ? <Spinner /> : "Translate"}
+            </button>
           </div>
         </div>
       )}
@@ -131,14 +138,16 @@ const Tiptap = ({onContentChange}:{onContentChange:(data:string)=>void}) => {
 
 export default Tiptap;
 
-const _fetchTranslation = async (inputText:string) => {
-    const res = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ inputText })
-    });
-    const data = await res.json();
-    return data.banglaText;
-}
+const _fetchTranslation = async (inputText: string) => {
+  const res = await fetch("/api/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ inputText }),
+  });
+  const data = await res.json();
+  return data.banglaText;
+};
+
+
