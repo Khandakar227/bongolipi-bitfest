@@ -44,3 +44,20 @@ export const GET = async (req: NextRequest) => {
         return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
     }
 }
+
+
+export const DELETE = async (req: NextRequest) => {
+    try {
+        const { userId } = getAuth(req);
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        const { id } = await req.json();
+        await dbConnect();
+        await Content.findByIdAndDelete(id);
+        return NextResponse.json({ message: "Content deleted successfully." });
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
+    }
+}
