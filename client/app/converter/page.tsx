@@ -11,7 +11,7 @@ export default function Converter() {
   const onTranslate = async () => {
     try {
       if (!banglish) return;
-
+      setBangla("");
       const url = `${BANGLISH_API}/banglish`;
       const options = {
         method: "POST",

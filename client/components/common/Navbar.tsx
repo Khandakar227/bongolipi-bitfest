@@ -17,7 +17,7 @@ export default function Navbar() {
                         <Link href={"/converter"}>Converter</Link>
                     </li>
                     <li className="font-semibold group relative">
-                        <Link href={"#features"}>Contents</Link>
+                        <Link href={"/contents"}>Contents</Link>
                     </li>
                     <li className="font-semibold group relative">
                         <Link href={"#features"}>Chatbot</Link>

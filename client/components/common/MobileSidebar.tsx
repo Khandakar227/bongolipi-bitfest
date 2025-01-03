@@ -31,7 +31,7 @@ export default function MobileSidebar() {
               <Link className="p-1 block" href={"/converter"}>Converter</Link>
             </li>
             <li className="font-semibold hover:bg-green-800">
-              <Link className="p-1 block" href={"/"}>Contents</Link>
+              <Link className="p-1 block" href={"/contents"}>Contents</Link>
             </li>
             <li className="font-semibold hover:bg-green-800">
               <Link className="p-1 block" href={"/"}>Chatbot</Link>
