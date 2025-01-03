@@ -26,24 +26,6 @@ export default function Navbar() {
             বঙ্গলিপি
           </h1>
         </Link>
-
-            <div className="hidden md:block">
-                <ul className="flex gap-6 pr-4 text-sm items-center">
-                    <li className="font-semibold"><Link href={"/"}>Home</Link></li>
-                    <li className="font-semibold group relative">
-                        <Link href={"/converter"}>Converter</Link>
-                    </li>
-                    <li className="font-semibold group relative">
-                        <Link href={"/contents"}>Contents</Link>
-                    </li>
-                    <li className="font-semibold group relative">
-                        <Link href={"#features"}>Chatbot</Link>
-                    </li>
-                    <li className="font-semibold group relative">
-                        <Link href={"#features"}>Contribute</Link>
-                    </li>
-                </ul>
-            </div>
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
