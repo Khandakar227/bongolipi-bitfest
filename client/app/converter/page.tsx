@@ -36,7 +36,7 @@ export default function Converter() {
           Banglish to Bangla সহজে লিখুন বাংলায়
         </h1>
         <p className="py-4 flex gap-2 justify-center items-center text-lg">
-          <span>Ajk amar mon bhalo nei</span> <ArrowBigRight /> আজকে আমার মন
+          <span>Ajke amar mon bhalo nei</span> <ArrowBigRight /> আজকে আমার মন
           ভালো নেই
         </p>
       </div>
