@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/common/Navbar";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "BongoLipi",
@@ -14,12 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider dynamic>
-      <html lang="en">
-        <body className={`font-poppins antialiased`}>
-          <Navbar/>
-          {children}</body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`font-poppins antialiased`}>
+        <ClerkProvider dynamic>
+          <Navbar />
+          {children}
+          <Toaster />
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

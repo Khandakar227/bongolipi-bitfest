@@ -34,7 +34,7 @@ export default function MobileSidebar() {
           animate={{ translateX: 0 }}
           exit={{ translateX: 400 }}
           transition={{ duration: 0.3 }}
-          className="fixed top-0 right-0 w-3/4 h-screen bg-gradient-to-b from-blue-900 via-gray-800 to-blue-900 shadow-2xl z-50"
+          className="fixed top-0 right-0 w-1/2 h-screen bg-gradient-to-b from-blue-900 via-gray-800 to-blue-900 shadow-2xl z-50"
         >
           {/* Close Button */}
           <div className="flex justify-end p-4">
