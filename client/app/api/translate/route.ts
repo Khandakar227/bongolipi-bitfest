@@ -16,29 +16,26 @@ export async function POST(req: NextRequest) {
 You are a highly accurate Banglish to Bangla translator AI. 
 Your goal is to read the provided text in Banglish and produce a correct, clear, and natural-sounding Bangla translation.
 
-Please follow these guidelines:
-1. Translate only the provided Banglish text into Bangla.
-2. Maintain the original meaning and tone.
-3. Present the final answer in JSON format with one key: "bangla_text".
+**IMPORTANT**: 
+1. You must output your response in code-fenced JSON with the key "bangla_text". 
+2. Do not include any commentary outside the code-fenced JSON. 
+3. Provide only one JSON code fence in your final answer.
 
 For example:
 \`\`\`json
 {
-  "bangla_text": "..."
+  "bangla_text": "আমার নাম রাহিম।"
 }
 \`\`\`
           `,
         },
         {
           role: 'user',
-          content: `translate the following text from Banglish to Bangla:\n\n${inputText}`,
-        },
-        {
-          role: 'assistant',
           content: `
-I'm ready to translate from Banglish to Bangla. 
-Please provide the text, and I will respond in JSON with the key "bangla_text". 
-`,
+Translate the following Banglish text to Bangla, and output only code-fenced JSON:
+
+${inputText}
+          `,
         },
       ],
       model: 'llama-3.3-70b-versatile',
@@ -49,19 +46,23 @@ Please provide the text, and I will respond in JSON with the key "bangla_text".
       stop: null,
     });
 
-    // Extract text from the response
+    // 1. Extract text from the response
     const translationText =
       chatCompletion.choices[0]?.message?.content ||
       'No translation was generated';
 
-    // Use regex to find the JSON block
+    // 2. Log the raw response (for debugging)
+    console.log('Raw model response:', translationText);
+
+    // 3. Use regex to find the JSON block
     const jsonBlockRegex = /```json([\s\S]*?)```/;
     const match = translationText.match(jsonBlockRegex);
 
     let parsedResult = {};
+
+    // 4. Parse the extracted JSON if it exists
     if (match && match[1]) {
       try {
-        // Attempt to parse the JSON block
         parsedResult = JSON.parse(match[1].trim());
       } catch (error) {
         console.error('Error parsing JSON:', error);
@@ -71,13 +72,13 @@ Please provide the text, and I will respond in JSON with the key "bangla_text".
         };
       }
     } else {
-      // If no JSON block is found, return the entire text as a fallback
+      // If no JSON block is found, return the entire text as fallback
       parsedResult = {
         bangla_text: translationText,
       };
     }
 
-    // Send the parsed JSON (or fallback) to the client
+    // 5. Send the parsed JSON (or fallback) to the client
     return NextResponse.json(parsedResult);
   } catch (error) {
     console.error(error);
