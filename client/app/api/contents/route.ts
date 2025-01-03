@@ -26,3 +26,21 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
     }
 }
+
+
+export const GET = async (req: NextRequest) => {
+    try {
+        const { userId } = getAuth(req);
+        
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        await dbConnect();
+        const contents = await Content.find({ userId });
+        return NextResponse.json(contents);
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
+    }
+}
