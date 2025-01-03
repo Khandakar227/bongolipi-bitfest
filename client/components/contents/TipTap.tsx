@@ -49,16 +49,17 @@ const Tiptap = ({onContentChange}:{onContentChange:(data:string)=>void}) => {
 
   const fetchTranslation = async (text: string) => {
     try {
-        const url = `${BANGLISH_API}/banglish`;
-        const options = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text }),
-        };
+        // const url = `${BANGLISH_API}/banglish`;
+        // const options = {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({ text }),
+        // };
         setTranslationLoading(true);
-        const response = await fetch(url, options);
-        const data = await response.json();
-        return data.generated_text;
+        // const response = await fetch(url, options);
+        // const data = await response.json();
+        // return data.generated_text;
+        return _fetchTranslation(text);
     } catch (error) {
         console.log(error);
         alert("Something went wrong. Please try again later.");
@@ -129,3 +130,15 @@ const Tiptap = ({onContentChange}:{onContentChange:(data:string)=>void}) => {
 };
 
 export default Tiptap;
+
+const _fetchTranslation = async (inputText:string) => {
+    const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ inputText })
+    });
+    const data = await res.json();
+    return data.banglaText;
+}

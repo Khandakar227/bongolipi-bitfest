@@ -29,7 +29,7 @@ export default function Navbar() {
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex w-1/2 items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-full shadow-inner overflow-hidden"
+          className="hidden lg:flex w-1/2 items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-full shadow-inner overflow-hidden"
         >
           <input
             type="text"
@@ -47,7 +47,7 @@ export default function Navbar() {
         </form>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex gap-6 items-center">
+        <div className="hidden lg:flex gap-6 items-center">
           <ul className="flex gap-6 pr-4 text-sm items-center">
             {["Home", "Converter", "Contents", "Chatbot", "Contribute"].map(
               (item, index) => (
@@ -82,7 +82,7 @@ export default function Navbar() {
           )}
         </div>
 
-            <div className="md:hidden z-20">
+            <div className="lg:hidden z-20">
                 <MobileSidebar />
             </div>
         </div>
