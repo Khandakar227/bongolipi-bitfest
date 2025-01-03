@@ -1,0 +1,1 @@
+export const BANGLISH_API = process.env.NEXT_PUBLIC_BANGLISH_API;
