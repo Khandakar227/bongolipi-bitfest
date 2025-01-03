@@ -1,10 +1,12 @@
 "use client";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 import Spinner from "@/components/common/Spinner";
 import { Delete, Download, Edit, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
 type Content = {
+  _id: string;
   title: string;
   caption: string;
   isPublished: boolean;
@@ -13,6 +15,25 @@ type Content = {
 function Contents() {
   const [contents, setContents] = useState([] as Content[]);
   const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const url = `/api/contents`;
+      const response = await fetch(url, { method: "DELETE", body: JSON.stringify({ id }) });
+      const data = await response.json();
+      setContents(c => c.filter(content => content._id !== id));
+    } catch (error) {
+      console.error(error);
+    }
+
+    setDialogOpen(false);
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+  };
+
 
   const fetchContents = async () => {
     try {
@@ -47,10 +68,18 @@ function Contents() {
               <div key={index} className="p-4 shadow bg-white rounded border my-4">
                 <h2 className="text-2xl font-bold">{content.title}</h2>
                 <p>{content.caption}</p>
+                <p className="p-1 rounded-md border bg-gray-100">{content.isPublished ? "Published" : "Private"}</p>
                 <div className="flex justify-end items-center gap-4">
                   <button className="text-green-400 p-2 rounded"><Download size={20}/></button>
                   <button className="text-orange-400 p-2 rounded"><Edit size={20}/></button>
-                  <button className="text-red p-2 rounded"><Trash2 size={20}/></button>
+                  <button className="text-red p-2 rounded" onClick={() => setDialogOpen(true)}><Trash2 size={20}/></button>
+                  <ConfirmDialog
+                    isOpen={isDialogOpen}
+                    title="Confirm Deletion"
+                    message="Are you sure you want to delete? This action cannot be undone."
+                    onConfirm={() => handleDelete(content._id)}
+                    onCancel={handleCancel}
+                  />
                 </div>
               </div>
             ))
