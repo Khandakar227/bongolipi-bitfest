@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navbar from "@/components/common/Navbar";
 
 export const metadata: Metadata = {
   title: "BongoLipi",
@@ -16,6 +17,7 @@ export default function RootLayout({
       <body
         className={`font-poppins antialiased`}
       >
+        <Navbar />
         {children}
       </body>
     </html>

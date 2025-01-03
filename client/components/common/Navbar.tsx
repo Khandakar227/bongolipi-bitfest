@@ -14,7 +14,7 @@ export default function Navbar() {
                 <ul className="flex gap-6 pr-4 text-sm items-center">
                     <li className="font-semibold"><Link href={"/"}>Home</Link></li>
                     <li className="font-semibold group relative">
-                        <Link href={"#features"}>Converter</Link>
+                        <Link href={"/converter"}>Converter</Link>
                     </li>
                     <li className="font-semibold group relative">
                         <Link href={"#features"}>Contents</Link>
