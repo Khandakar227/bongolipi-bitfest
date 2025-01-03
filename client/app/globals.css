@@ -2,3 +2,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  .toolbar button {
+    @apply border px-2 py-1 rounded text-xs;
+  }
+  *:focus {
+    @apply outline-primary; 
+  }
+}
+
+.ProseMirror {
+  width: auto;
+  border: 1px solid #ffffff21;
+  border-radius: 5px;
+  min-height: 150px;
+}
+
+.ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Loading Spinner */
+.loader {
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  }
+
+  @keyframes rotation {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+  } 
