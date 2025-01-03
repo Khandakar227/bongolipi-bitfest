@@ -1,20 +1,50 @@
 "use client";
+
 import Link from "next/link";
 import MobileSidebar from "./MobileSidebar";
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { Search, User, FileText } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth, UserButton } from "@clerk/nextjs";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { isSignedIn } = useAuth();
   const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    alert(`Searching for: ${searchQuery}`);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setSearchResults([]); // Close dropdown when clicking outside
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/search?q=${query}`);
+      const data = await res.json();
+      setSearchResults([...data.users, ...data.contents]);
+    } catch (error) {
+      console.error("Search error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -26,25 +56,55 @@ export default function Navbar() {
             বঙ্গলিপি
           </h1>
         </Link>
+
         {/* Search Bar */}
-        <form
-          onSubmit={handleSearch}
-          className="hidden lg:flex w-1/2 items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-full shadow-inner overflow-hidden"
-        >
-          <input
-            type="text"
-            placeholder="Search for PDFs, profiles, or content..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-grow px-4 py-2 text-white bg-transparent text-sm outline-none placeholder-gray-300"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-gradient-to-r from-blue-800 to-blue-600 text-white hover:from-blue-700 hover:to-blue-500 transition"
-          >
-            <Search />
-          </button>
-        </form>
+        <div className="relative w-1/2">
+          <form className="hidden lg:flex items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-full shadow-inner overflow-hidden">
+            <input
+              type="text"
+              placeholder="Search for PDFs, profiles, or content..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="flex-grow px-4 py-2 text-white bg-transparent text-sm outline-none placeholder-gray-300"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-gradient-to-r from-blue-800 to-blue-600 text-white hover:from-blue-700 hover:to-blue-500 transition"
+            >
+              <Search />
+            </button>
+          </form>
+
+          {/* Dropdown */}
+          {searchResults.length > 0 && (
+            <div
+              ref={dropdownRef}
+              className="absolute mt-2 w-full bg-white text-gray-800 shadow-lg rounded-md max-h-60 overflow-auto z-50"
+            >
+              {searchResults.map((result: any, index) => (
+                <Link
+                  href={result.userId ? `/profiles/${result.userId}` : `/contents/${result._id}`}
+                  key={index}
+                  className="flex items-center justify-between px-4 py-2 hover:bg-gray-200"
+                >
+                  <div>
+                    {result.firstName
+                      ? `${result.firstName} ${result.lastName} (${result.email})`
+                      : `${result.title}: ${result.caption}`}
+                  </div>
+                  <div>
+                    {result.firstName ? (
+                      <User className="text-gray-500" size={20} />
+                    ) : (
+                      <FileText className="text-blue-500" size={20} />
+                    )}
+                  </div>
+                </Link>
+              ))}
+              {isLoading && <p className="px-4 py-2 text-sm text-gray-500">Loading...</p>}
+            </div>
+          )}
+        </div>
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex gap-6 items-center">
@@ -82,10 +142,10 @@ export default function Navbar() {
           )}
         </div>
 
-            <div className="lg:hidden z-20">
-                <MobileSidebar />
-            </div>
+        <div className="lg:hidden z-20">
+          <MobileSidebar />
         </div>
+      </div>
     </div>
   );
 }
