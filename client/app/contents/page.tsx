@@ -4,11 +4,15 @@ import Spinner from "@/components/common/Spinner";
 import { Delete, Download, Edit, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { jsPDF } from 'jspdf';
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import html2canvas from 'html2canvas';
 
 type Content = {
   _id: string;
   title: string;
   caption: string;
+  content: string;
   isPublished: boolean;
 }
 
@@ -52,6 +56,35 @@ function Contents() {
   useEffect(() => {
     fetchContents();
   }, []);
+
+  const downloadPdf = async (doc_id:string) => {
+    const content = document.getElementById(doc_id) as HTMLElement;
+    content.style.display = "block";
+    const canvas = await html2canvas(content, {
+      useCORS: true, // Allows cross-origin resources
+      onclone: (documentClone) => {
+        documentClone.fonts.ready.then(() => {
+          console.log('Fonts loaded!');
+        });
+      }
+    });
+    const imgData = canvas.toDataURL('image/png');
+
+    // Initialize jsPDF and add the image
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'pt',
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+    // Save the PDF
+    pdf.save('document.pdf');
+    content.style.display = "none";
+    
+  }
+
   return (
     <div className="min-h-screen py-12 max-w-7xl mx-auto px-4">
       <div className="flex justify-between items-center gap-4">
@@ -68,9 +101,12 @@ function Contents() {
               <div key={index} className="p-4 shadow bg-white rounded border my-4">
                 <h2 className="text-2xl font-bold">{content.title}</h2>
                 <p>{content.caption}</p>
-                <p className="p-1 rounded-md border bg-gray-100">{content.isPublished ? "Published" : "Private"}</p>
+                <div className="pt-2">
+                  <span className="p-1 rounded-md border bg-gray-100">{content.isPublished ? "Published" : "Private"}</span>
+                </div>
                 <div className="flex justify-end items-center gap-4">
-                  <button className="text-green-400 p-2 rounded"><Download size={20}/></button>
+                  <ContentTemplate {...content}/>
+                  <button className="text-green-400 p-2 rounded" onClick={() => downloadPdf(`doc_${content._id}`)}><Download size={20}/></button>
                   <button className="text-orange-400 p-2 rounded"><Edit size={20}/></button>
                   <button className="text-red p-2 rounded" onClick={() => setDialogOpen(true)}><Trash2 size={20}/></button>
                   <ConfirmDialog
@@ -89,4 +125,15 @@ function Contents() {
   )
 }
 
+const ContentTemplate = (content:Content) => {
+  return (
+    <div id={`doc_`+ content._id} style={{display: "none"}} className="p-4 shadow bg-white rounded border my-4 fixed">
+      <h2 className="text-2xl px-6 font-bold">{content.title}</h2>
+      <p className="pb-5 px-6 text-lg">{content.caption}</p>
+        <div data-color-mode="light" className="mr-4">
+          <MarkdownPreview style={{backgroundColor: "transparent"}} source={content.content} />
+        </div>
+    </div>
+  )
+}
 export default Contents
