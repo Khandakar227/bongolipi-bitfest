@@ -11,6 +11,11 @@ export default {
       fontFamily: {
         balooda: ["'Baloo Da 2'", "serif"],
         poppins: ["Poppins", "sans-serif"],
+      },
+      colors: {
+        "primary": "#140F2D",
+        "secondary": "#002964"
+
       }
     },
   },

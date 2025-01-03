@@ -17,10 +17,10 @@ export default function MobileSidebar() {
         initial={{translateX: 400}}
         animate={{ translateX: show ? 0 : 400 }}
         transition={{ duration: 0.3 }}
-        className="fixed top-0 right-0 p-4 bg-white dark:bg-[#20251f] dark:text-gray-100 min-h-screen min-w-48">
+        className="fixed top-0 right-0 p-4 bg-secondary min-h-screen min-w-48">
           <div className="pt-2 pb-8 flex justify-end">
-            <button onClick={() => setShow(false)} className="text-white">
-              <CircleX />
+            <button onClick={() => setShow(false)}>
+              <CircleX className="stroke-white" />
             </button>
           </div>
           <ul className="flex flex-col gap-4">
