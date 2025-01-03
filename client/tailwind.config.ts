@@ -8,10 +8,9 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+      fontFamily: {
+        balooda: ["Baloo Da 2", "serif"],
+      }
     },
   },
   plugins: [],
