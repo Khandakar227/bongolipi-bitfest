@@ -16,6 +16,7 @@
     "@tiptap/starter-kit": "^2.10.3",
     "@uiw/react-markdown-preview": "^5.1.3",
     "bongolipi": "file:",
+    "extendable-media-recorder": "^9.2.17",
     "formidable": "^3.5.2",
     "framer-motion": "^11.15.0",
     "groq-sdk": "^0.9.1",

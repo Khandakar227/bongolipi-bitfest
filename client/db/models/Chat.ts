@@ -1,8 +1,8 @@
-// file: models/EmbeddingRecord.ts
+// file: models/Chat.ts
 import { randomUUID } from 'crypto';
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IEmbeddingRecord extends Document {
+interface IChat extends Document {
   userId: string; // or mongoose.Schema.Types.ObjectId if referencing a User model
   sessionId: string; // will be auto-generated if not provided
   createdAt: Date;
@@ -10,7 +10,7 @@ interface IEmbeddingRecord extends Document {
   content: string;
 }
 
-const EmbeddingRecordSchema = new Schema<IEmbeddingRecord>(
+const ChatSchema = new Schema<IChat>(
   {
     userId: {
       type: String,
@@ -43,5 +43,5 @@ const EmbeddingRecordSchema = new Schema<IEmbeddingRecord>(
   },
 );
 
-export default mongoose.models.EmbeddingRecord ||
-  mongoose.model<IEmbeddingRecord>('EmbeddingRecord', EmbeddingRecordSchema);
+export default mongoose.models.Chat ||
+  mongoose.model<IChat>('Chat', ChatSchema);
