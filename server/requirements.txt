@@ -1,2 +1,11 @@
 fastapi[standard]
 uvicorn
+langchain_community
+tiktoken
+langchain-openai
+langchainhub
+chromadb
+langchain
+langchain-groq
+langchain_huggingface
+langchain_community pypdf
