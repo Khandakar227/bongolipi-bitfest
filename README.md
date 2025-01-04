@@ -14,6 +14,8 @@
 ### 🤖 **Chatbot**
 - Understands Banglish or Bangla queries and provides responses in Bangla.
 - Offers answers based on user-uploaded PDFs or saved data.
+- We have implemented a multi-query approach in RAG (Retrieval-Augmented Generation) to ensure more accurate and contextually relevant results.
+- Used LangSmith to test our opensource models results
 
 ### 📂 **Content Management**
 - Manage and organize your uploaded content, including PDFs and text data.
@@ -52,6 +54,7 @@
 6. **PDF Export**: Write and edit text and save it as a PDF document.
 7. **Real-Time Collaboration**: Collaborate with other users on the same document in real time.
 8. **Continuous Learning**: Reviews and incorporates data to enhance the translation model’s performance over time.
+9. 
 
 ---
 
@@ -72,4 +75,4 @@
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/bongolipi.git
-   cd bongolipi
+   cd client
