@@ -4,7 +4,7 @@ import Link from "next/link";
 import MobileSidebar from "./MobileSidebar";
 import { Search, User, FileText } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useAuth, UserButton } from "@clerk/nextjs";
+import { useAuth, useUser, UserButton } from "@clerk/nextjs";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
 
@@ -13,12 +13,18 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { isSignedIn } = useAuth();
+  const { user } = useUser(); // Correct way to access user metadata on the client-side
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const isAdmin = user?.publicMetadata?.role === "admin"; // Validate admin role
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setSearchResults([]); // Close dropdown when clicking outside
       }
     };
@@ -83,7 +89,11 @@ export default function Navbar() {
             >
               {searchResults.map((result: any, index) => (
                 <Link
-                  href={result.userId ? `/profiles/${result.userId}` : `/contents/${result._id}`}
+                  href={
+                    result.userId
+                      ? `/profiles/${result.userId}`
+                      : `/contents/${result._id}`
+                  }
                   key={index}
                   className="flex items-center justify-between px-4 py-2 hover:bg-gray-200"
                 >
@@ -101,7 +111,9 @@ export default function Navbar() {
                   </div>
                 </Link>
               ))}
-              {isLoading && <p className="px-4 py-2 text-sm text-gray-500">Loading...</p>}
+              {isLoading && (
+                <p className="px-4 py-2 text-sm text-gray-500">Loading...</p>
+              )}
             </div>
           )}
         </div>
@@ -118,6 +130,12 @@ export default function Navbar() {
                   <Link href={`/${item.toLowerCase()}`}>{item}</Link>
                 </li>
               )
+            )}
+            {/* Admin Option */}
+            {isAdmin && (
+              <li className="font-semibold hover:text-blue-400 transition-colors duration-300">
+                <Link href="/admin">Admin</Link>
+              </li>
             )}
           </ul>
 
