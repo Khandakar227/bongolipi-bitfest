@@ -19,6 +19,7 @@ type Content = {
   upvotes: string[];
 };
 
+
 function Contents() {
   const [contents, setContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,20 @@ function Contents() {
   const [selectedContentId, setSelectedContentId] = useState<string | null>(
     null
   );
+  const [analytics, setAnalytics] = useState({
+    totalContents: 0,
+    totalUpvotes: 0,
+    totalChatInteractions: 0,
+    totalContributions: 0,
+  });
+
+  useEffect(() => {
+    fetch("/api/analytics")
+    .then(res => res.json())
+    .then(data => {
+      setAnalytics(data);
+    }).catch(err=> console.log(err))
+  }, []);
 
   const handleDelete = async (id: string) => {
     try {
@@ -34,7 +49,7 @@ function Contents() {
         method: "DELETE",
         body: JSON.stringify({ id }),
       });
-      const data = await response.json();
+      await response.json();
       setContents((c) => c.filter((content) => content._id !== id));
     } catch (error) {
       console.error(error);
@@ -87,11 +102,27 @@ function Contents() {
     fetchContents();
   }, []);
 
+  // const pieData = {
+  //   labels: ["Contents", "Upvotes", "Chat Interactions", "Contributions"],
+  //   datasets: [
+  //     {
+  //       data: [
+  //         analytics?.totalContents || 0,
+  //         analytics?.totalUpvotes || 0,
+  //         analytics?.totalChatInteractions || 0,
+  //         analytics?.totalContributions || 0,
+  //       ],
+  //       backgroundColor: ["#4CAF50", "#2196F3", "#FF9800", "#F44336"],
+  //       hoverBackgroundColor: ["#45A049", "#1E88E5", "#FB8C00", "#E53935"],
+  //     },
+  //   ],
+  // };
+
   return (
     <div className="min-h-screen py-12 max-w-7xl mx-auto px-4">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-blue-800">Manage Contents</h1>
+        <h1 className="text-4xl font-bold text-primary">Manage Contents</h1>
         <Link
           href="/mycontents/create"
           className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-indigo-500 transition"
@@ -136,7 +167,7 @@ function Contents() {
               <div className="flex justify-end items-center gap-4">
                 <ContentTemplate {...content} />
                 <button
-                  className="text-blue-600 hover:text-blue-800"
+                  className="text-blue-600 hover:text-primary"
                   onClick={() => downloadPdf(`doc_${content._id}`)}
                 >
                   <Download size={20} />
@@ -167,6 +198,30 @@ function Contents() {
           ))
         )}
       </div>
+      {/* Analytics Section */}
+      <h1 className="pt-12 pb-4 text-3xl text-primary font-bold">User Analytics</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="p-4 bg-green-100 rounded shadow text-center">
+          <h2 className="text-xl font-semibold text-green-700">Total Contents</h2>
+          <p className="text-3xl font-bold">{analytics?.totalContents || 0}</p>
+        </div>
+        <div className="p-4 bg-blue-100 rounded shadow text-center">
+          <h2 className="text-xl font-semibold text-blue-700">Total Upvotes</h2>
+          <p className="text-3xl font-bold">{analytics?.totalUpvotes || 0}</p>
+        </div>
+        <div className="p-4 bg-orange-100 rounded shadow text-center">
+          <h2 className="text-xl font-semibold text-orange-700">
+            Chat Interactions
+          </h2>
+          <p className="text-3xl font-bold">
+            {analytics?.totalChatInteractions || 0}
+          </p>
+        </div>
+        <div className="p-4 bg-red-100 rounded shadow text-center">
+          <h2 className="text-xl font-semibold text-red-700">Contributions</h2>
+          <p className="text-3xl font-bold">{analytics?.totalContributions || 0}</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -189,5 +244,8 @@ const ContentTemplate = (content: Content) => {
 };
 
 export default Contents;
+
+
+
 
 
