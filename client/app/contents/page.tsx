@@ -1,139 +1,219 @@
 "use client";
-import ConfirmDialog from "@/components/common/ConfirmDialog";
-import Spinner from "@/components/common/Spinner";
-import { Delete, Download, Edit, Plus, Trash2 } from "lucide-react"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { jsPDF } from 'jspdf';
-import MarkdownPreview from "@uiw/react-markdown-preview";
-import html2canvas from 'html2canvas';
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ThumbsUp } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 
 type Content = {
   _id: string;
   title: string;
   caption: string;
+  userId: string;
+  userName: string;
+  created_at: string;
   content: string;
-  isPublished: boolean;
-}
+  upvotes: string[];
+};
 
-function Contents() {
-  const [contents, setContents] = useState([] as Content[]);
+function PublicContents() {
+  const [contents, setContents] = useState<Content[]>([]);
+  const [selectedContent, setSelectedContent] = useState<Content | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isDialogOpen, setDialogOpen] = useState(false);
-
-  const handleDelete = async (id: string) => {
-    try {
-      const url = `/api/contents`;
-      const response = await fetch(url, { method: "DELETE", body: JSON.stringify({ id }) });
-      const data = await response.json();
-      setContents(c => c.filter(content => content._id !== id));
-    } catch (error) {
-      console.error(error);
-    }
-
-    setDialogOpen(false);
-  };
-
-  const handleCancel = () => {
-    setDialogOpen(false);
-  };
-
+  const router = useRouter();
+  const { userId } = useAuth();
 
   const fetchContents = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const url = `/api/contents`;
-      const response = await fetch(url);
+      const response = await fetch("/api/publiccontents");
       const data = await response.json();
       setContents(data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching contents:", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const handleUpvote = async (contentId: string) => {
+    if (!userId) {
+      alert("You must be logged in to upvote!");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/upvote", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contentId, userId }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setContents((prev) =>
+          prev.map((content) =>
+            content._id === contentId
+              ? { ...content, upvotes: data.upvotes }
+              : content
+          )
+        );
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error("Error upvoting content:", error);
+    }
+  };
+
+  const closeModal = () => {
+    setSelectedContent(null);
+  };
 
   useEffect(() => {
     fetchContents();
   }, []);
 
-  const downloadPdf = async (doc_id:string) => {
-    const content = document.getElementById(doc_id) as HTMLElement;
-    content.style.display = "block";
-    const canvas = await html2canvas(content, {
-      useCORS: true, // Allows cross-origin resources
-      onclone: (documentClone) => {
-        documentClone.fonts.ready.then(() => {
-          console.log('Fonts loaded!');
-        });
-      }
-    });
-    const imgData = canvas.toDataURL('image/png');
-
-    // Initialize jsPDF and add the image
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'pt',
-      format: [canvas.width, canvas.height],
-    });
-
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-
-    // Save the PDF
-    pdf.save('document.pdf');
-    content.style.display = "none";
-    
+  function onSelectContent(content:Content) {
+    console.log(content)
+    setSelectedContent(content)
   }
-
   return (
     <div className="min-h-screen py-12 max-w-7xl mx-auto px-4">
-      <div className="flex justify-between items-center gap-4">
-        <h1 className="text-4xl font-bold">Manage your Contents</h1>
-        <Link href={"/contents/create"} className="flex justify-center items-center gap-2 bg-primary p-2 pr-4 rounded text-white"><Plus/><span>Create</span></Link>
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-8">
+        <motion.h1
+          className="text-4xl font-bold text-blue-700"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Public Contents
+        </motion.h1>
+        <motion.button
+          onClick={() => router.push("/mycontents")}
+          className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-indigo-500 shadow-lg transition-transform transform hover:scale-105"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          View Dashboard
+        </motion.button>
       </div>
 
-      <div className="my-6 p-4 shadow bg-gray-50 rounded border">
-        <h1 className="text-4xl font-bold">My Contents</h1>
-          {
-            loading ? (<Spinner/>) :
-            contents.length === 0 ? (<p className="text-center p-4">No contents found.</p>) :
-            contents.map((content, index) => (
-              <div key={index} className="p-4 shadow bg-white rounded border my-4">
-                <h2 className="text-2xl font-bold">{content.title}</h2>
-                <p>{content.caption}</p>
-                <div className="pt-2">
-                  <span className="p-1 rounded-md border bg-gray-100">{content.isPublished ? "Published" : "Private"}</span>
-                </div>
-                <div className="flex justify-end items-center gap-4">
-                  <ContentTemplate {...content}/>
-                  <button className="text-green-400 p-2 rounded" onClick={() => downloadPdf(`doc_${content._id}`)}><Download size={20}/></button>
-                  <button className="text-orange-400 p-2 rounded"><Edit size={20}/></button>
-                  <button className="text-red p-2 rounded" onClick={() => setDialogOpen(true)}><Trash2 size={20}/></button>
-                  <ConfirmDialog
-                    isOpen={isDialogOpen}
-                    title="Confirm Deletion"
-                    message="Are you sure you want to delete? This action cannot be undone."
-                    onConfirm={() => handleDelete(content._id)}
-                    onCancel={handleCancel}
-                  />
-                </div>
-              </div>
-            ))
-          }
-      </div>
-    </div>
-  )
-}
-
-const ContentTemplate = (content:Content) => {
-  return (
-    <div id={`doc_`+ content._id} style={{display: "none"}} className="p-4 shadow bg-white rounded border my-4 fixed">
-      <h2 className="text-2xl px-6 font-bold">{content.title}</h2>
-      <p className="pb-5 px-6 text-lg">{content.caption}</p>
-        <div data-color-mode="light" className="mr-4">
-          <MarkdownPreview style={{backgroundColor: "transparent"}} source={content.content} />
+      {/* Content Section */}
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-lg font-semibold text-gray-500">
+            Loading contents...
+          </p>
         </div>
+      ) : contents.length === 0 ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-lg font-semibold text-gray-500">
+            No public contents found.
+          </p>
+        </div>
+      ) : (
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { staggerChildren: 0.2 },
+            },
+          }}
+        >
+          {contents.map((content) => {
+            const isUpvoted =
+              Array.isArray(content.upvotes) &&
+              content.upvotes.includes(userId || "");
+            return (
+              <motion.div
+                key={content._id}
+                className="p-6 bg-white rounded-lg shadow-lg border hover:shadow-xl transition-transform transform hover:scale-105"
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => onSelectContent(content)}
+              >
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                  {content.title}
+                </h2>
+                <p className="text-base text-gray-600 mb-6">
+                  {content.caption}
+                </p>
+                <div className="text-sm text-gray-500 mb-4">
+                  <p>
+                    <strong>Created by:</strong> {content.userName}
+                  </p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {new Date(content.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent modal from opening
+                    handleUpvote(content._id);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded ${
+                    isUpvoted
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  } hover:bg-blue-500 transition`}
+                >
+                  <ThumbsUp size={18} />
+                  <span>{content.upvotes?.length || 0}</span>
+                </button>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
+
+      {/* Modal */}
+      {selectedContent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-2/3 p-6">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              {selectedContent.title}
+            </h2>
+            <p className="text-base text-gray-600 mb-6">
+              {selectedContent.caption}
+            </p>
+            <div className="text-gray-600 mb-4">
+              <p>
+                <strong>Content:</strong> {selectedContent.content}
+              </p>
+            </div>
+            <div className="text-sm text-gray-500">
+              <p>
+                <strong>Created by:</strong> {selectedContent.userName}
+              </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(selectedContent.created_at).toLocaleDateString()}
+              </p>
+            </div>
+            <button
+              onClick={closeModal}
+              className="mt-6 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
-export default Contents
+
+export default PublicContents;
