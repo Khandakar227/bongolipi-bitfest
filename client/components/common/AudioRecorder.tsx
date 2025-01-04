@@ -52,7 +52,6 @@ export default function AudioRecorder() {
 
   return (
     <div>
-      <h1>Audio Transcription</h1>
       <button onClick={recording ? stopRecording : startRecording}>
         {recording ? "Stop Recording" : "Start Recording"}
       </button>

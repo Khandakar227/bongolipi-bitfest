@@ -3,6 +3,7 @@
 import os
 from fastapi import FastAPI, UploadFile, File, Form
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 # LangChain & Groq Imports
 from langchain_groq import ChatGroq
@@ -19,9 +20,17 @@ from langchain.load import dumps, loads
 
 from typing import Optional
 import tempfile
+import uvicorn
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware, # https://fastapi.tiangolo.com/tutorial/cors/
+    allow_origins=['*'], # wildcard to allow all, more here - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+    allow_credentials=True, # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+    allow_methods=['*'], # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
+    allow_headers=['*'], # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
+)
 ###############################################################################
 #                            SETUP & GLOBAL OBJECTS
 ###############################################################################
@@ -226,7 +235,6 @@ async def rag_multi_query(
 
 # Optional: run via "python main.py"
 if __name__ == "__main__":
-    import uvicorn
     print("[MAIN] Starting uvicorn server on port 8000...")
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
     print("[MAIN] Server shutdown.")

@@ -8,4 +8,5 @@ chromadb
 langchain
 langchain-groq
 langchain_huggingface
-langchain_community pypdf
+langchain_community
+pypdf
