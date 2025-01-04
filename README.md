@@ -15,7 +15,7 @@
 - Understands Banglish or Bangla queries and provides responses in Bangla.
 - Offers answers based on user-uploaded PDFs or saved data.
 - We have implemented a multi-query approach in RAG (Retrieval-Augmented Generation) to ensure more accurate and contextually relevant results.
-- Used LangSmith to test our opensource models results
+
 
 ### 📂 **Content Management**
 - Manage and organize your uploaded content, including PDFs and text data.
