@@ -284,7 +284,7 @@ This endpoint allows a user to send a message in an existing session. The reques
 
 ---
 
-## \ud83d\udda5\ufe0f Installation
+##Installation
 
 1. Clone the repository:
    ```bash
