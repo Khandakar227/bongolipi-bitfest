@@ -1,67 +1,65 @@
-import React, { useState, useRef } from "react";
+// pages/index.js
+import { useState } from "react";
 
-const AudioRecorder = () => {
-  const [isRecording, setIsRecording] = useState(false);
+export default function AudioRecorder() {
+  const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob|null>(null);
-  const mediaRecorder = useRef<MediaRecorder>(null);
-  const audioChunks = useRef<Blob[]>([]);
+  const [transcription, setTranscription] = useState("");
+
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder|null>(null);
+  let chunks:BlobPart[] = [];
 
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder.current = new MediaRecorder(stream);
-    mediaRecorder.current.ondataavailable = (event) => {
-      audioChunks.current.push(event.data);
+    setMediaRecorder(new MediaRecorder(stream));
+
+    if(!mediaRecorder) return;
+
+    mediaRecorder.ondataavailable = (event) => {
+      chunks.push(event.data);
     };
 
-    mediaRecorder.current.onstop = () => {
-      const blob = new Blob(audioChunks.current, { type: "audio/m4a" });
-      setAudioBlob(blob);
-      audioChunks.current = [];
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(chunks, { type: "audio/webm" });
+      setAudioBlob(audioBlob);
+      chunks = [];
     };
 
-    mediaRecorder.current.start();
-    setIsRecording(true);
+    mediaRecorder.start();
+    setRecording(true);
   };
 
   const stopRecording = () => {
-    mediaRecorder.current?.stop();
-    setIsRecording(false);
+    mediaRecorder?.stop();
+    console.log(mediaRecorder)
+    setRecording(false);
   };
 
-  const uploadAudio = async () => {
+  const sendAudio = async () => {
     if (!audioBlob) return;
 
     const formData = new FormData();
-    formData.append("audio", audioBlob, "recording.m4a");
+    formData.append("audio", audioBlob, "recording.webm");
 
-    try {
-      const response = await fetch("/api/upload-audio", {
-        method: "POST",
-        body: formData,
-      });
+    const res = await fetch("/api/transcribe", {
+      method: "POST",
+      body: formData,
+    });
 
-      const data = await response.json();
-      console.log(data);
-      alert(`File uploaded successfully: ${data.message}`);
-    } catch (error) {
-      console.error("Upload failed", error);
-      alert("Failed to upload the audio.");
-    }
+    const data = await res.json();
+    setTranscription(data.transcription);
   };
 
   return (
     <div>
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? "Stop Recording" : "Start Recording"}
+      <h1>Audio Transcription</h1>
+      <button onClick={recording ? stopRecording : startRecording}>
+        {recording ? "Stop Recording" : "Start Recording"}
       </button>
-      {audioBlob && (
-        <div>
-          <audio controls src={URL.createObjectURL(audioBlob)} />
-          <button onClick={uploadAudio}>Upload Audio</button>
-        </div>
-      )}
+      <button onClick={sendAudio} disabled={!audioBlob}>
+        Send for Transcription
+      </button>
+      <p>Transcription: {transcription}</p>
     </div>
   );
-};
-
-export default AudioRecorder;
+}
