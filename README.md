@@ -68,11 +68,68 @@
 - **PDF Generation**: Custom PDF export functionality
 - **Machine Learning**: Custom-trained Banglish-to-Bangla translation model
 
+## API Routes
+
+### **Banglish-to-Bangla Conversion**
+- **Route**: `POST /api/generate`
+- **Request Body**:
+  ```json
+  {
+    "inputText": "onek din dhore ononto tar babar sathe bibhinno science fair-e jay."
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "translatedText": "অনেক দিন ধরে অনন্ত তার বাবার সাথে বিভিন্ন সায়েন্স ফেয়ারে যায়।"
+  }
+  ```
+
+### **Generate PDF**
+- **Route**: `POST /generate-pdf`
+- **Request Body**:
+  ```json
+  {
+    "title": "আজকের গল্প",
+    "caption": "আজকের গল্পটি অনন্তের স্বপ্ন নিয়ে।",
+    "content": "আজকের গল্পটি অনন্তের স্বপ্ন নিয়ে।"
+  }
+  ```
+- **Response**: Returns a downloadable PDF.
+
+### **RAG Query**
+- **Route**: `POST /rag-query`
+- **Request Body**:
+  ```json
+  {
+    "question": "অনন্তের স্বপ্ন কী ছিল?"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "answer": "অনন্ত পাইলট হতে চেয়েছিল।"
+  }
+  ```
+
 ---
 
-## 🖥️ Installation
+## \ud83d\udda5\ufe0f Installation
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/bongolipi.git
-   cd client
+   cd bongolipi
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Navigate to `http://localhost:3000` in your browser to access the application.
