@@ -127,6 +127,161 @@
   }
   ```
 
+  ## `GET /api/admin/analytics`
+
+### Success Response:
+- **Status Code:** `200 OK`
+- **Response Body (example):**
+  ```json
+  {
+    "totalUsers": 1200,
+    "totalContents": 350,
+    "totalPendingContributions": 45,
+    "totalApprovedContributions": 200
+  }
+  ```
+
+### Error Response:
+- **Status Code:** `500 Internal Server Error`
+- **Response Body (example):**
+  ```json
+  {
+    "error": "Internal server error"
+  }
+  ```
+
+---
+
+## `GET /chat/sessionid/{sessionId}`
+
+### Success Response:
+- **Status Code:** `200 OK`
+- **Response Body (example):**
+  ```json
+  [
+    {
+      "userId": "user_123",
+      "sessionId": "abc123",
+      "createdAt": "2025-01-04T14:00:00Z",
+      "role": "user",
+      "content": "Hello, how can I help you?"
+    },
+    {
+      "userId": "assistant_456",
+      "sessionId": "abc123",
+      "createdAt": "2025-01-04T14:01:00Z",
+      "role": "assistant",
+      "content": "Hi, I need help with my order."
+    }
+  ]
+  ```
+
+### Error Responses:
+- **Status Code:** `401 Unauthorized`
+  - **Response Body (example):**
+    ```json
+    {
+      "error": "SessionId was not provided"
+    }
+    ```
+- **Status Code:** `500 Internal Server Error`
+  - **Response Body (example):**
+    ```json
+    {
+      "error": "Something went wrong. Please try again later."
+    }
+    ```
+
+---
+
+## `GET /generate`
+
+### Description:
+This endpoint retrieves all unique session IDs associated with a specific user. It is useful for fetching the list of sessions a user has participated in.
+
+### Request:
+- **Method:** `GET`
+- **Authentication:** Requires authentication via Clerk. The `userId` is fetched using the `Clerk.getAuth()` function, ensuring the request is made by an authenticated user.
+- **Headers:**
+  ```
+  Authorization: Bearer <user_jwt_token>
+  ```
+
+### Success Response:
+- **Status Code:** `200 OK`
+- **Response Body (example):**
+  ```json
+  {
+    "sessions": [
+      "session123",
+      "session456",
+      "session789"
+    ]
+  }
+  ```
+
+### Error Response:
+- **Status Code:** `500 Internal Server Error`
+- **Response Body (example):**
+  ```json
+  {
+    "error": "Something went wrong. Please try again later."
+  }
+  ```
+
+---
+
+## `POST /generate`
+
+### Description:
+This endpoint allows a user to send a message in an existing session. The request includes the session ID, message content, and the role (either user or assistant).
+
+### Request:
+- **Method:** `POST`
+- **Authentication:** Requires authentication via Clerk. The `userId` is fetched using the `Clerk.getAuth()` function.
+- **Headers:**
+  ```
+  Authorization: Bearer <user_jwt_token>
+  ```
+- **Request Body:**
+  ```json
+  {
+    "sessionId": "session123",
+    "role": "user",
+    "content": "How can I help you today?"
+  }
+  ```
+
+### Success Response:
+- **Status Code:** `200 OK`
+- **Response Body (example):**
+  ```json
+  {
+    "userId": "user_123",
+    "sessionId": "session123",
+    "createdAt": "2025-01-04T14:05:00Z",
+    "role": "user",
+    "content": "How can I help you today?"
+  }
+  ```
+
+### Error Responses:
+- **Status Code:** `401 Unauthorized`
+  - **Response Body (example):**
+    ```json
+    {
+      "error": "SessionId or message was not provided"
+    }
+    ```
+- **Status Code:** `500 Internal Server Error`
+  - **Response Body (example):**
+    ```json
+    {
+      "error": "Something went wrong. Please try again later."
+    }
+    
+
+
 ---
 
 ## \ud83d\udda5\ufe0f Installation
