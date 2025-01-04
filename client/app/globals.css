@@ -5,7 +5,7 @@
 
 @layer base {
   .toolbar button {
-    @apply border px-2 py-1 rounded text-xs;
+    @apply border px-2 py-1 rounded;
   }
   *:focus {
     @apply outline-primary; 

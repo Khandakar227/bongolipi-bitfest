@@ -1,11 +1,13 @@
 import Chat from '@/db/models/Chat';
 import { dbConnect } from '@/db/mongod';
+import { getAuth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (req: NextRequest) => {
+export const GET = async (req: NextRequest, {params}: {params: {sessionId:string}}) => {
   try {
-    const sessionId = req.nextUrl.searchParams.get('sessionId');
+    const { sessionId } = params;
 
+    const { userId } = await getAuth(req);
     if (!sessionId) {
       return NextResponse.json(
         { error: 'SessionId was not provided' },
