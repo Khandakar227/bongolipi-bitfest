@@ -54,7 +54,6 @@
 6. **PDF Export**: Write and edit text and save it as a PDF document.
 7. **Real-Time Collaboration**: Collaborate with other users on the same document in real time.
 8. **Continuous Learning**: Reviews and incorporates data to enhance the translation model’s performance over time.
-9. 
 
 ---
 
